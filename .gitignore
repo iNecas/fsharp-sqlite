@@ -1,0 +1,6 @@
+.paket/load
+obj/
+bin/
+packages/
+paket-files/
+.idea
