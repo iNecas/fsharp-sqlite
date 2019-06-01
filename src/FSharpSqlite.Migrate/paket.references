@@ -1,0 +1,6 @@
+FSharp.Core
+
+FluentMigrator
+FluentMigrator.Runner
+FluentMigrator.Runner.Sqlite
+Microsoft.Data.SQLite

@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <RootNamespace>FsharpSqlite.Use</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="SqlProvider.fs" />
+    <Compile Include="Program.fs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="paket.references" />
+  </ItemGroup>
+  <Target Name="CopyLibraries">
+    <Exec Command="mkdir -p ProviderPackages" />
+    <Exec Command="cp ../../packages/SQLitePCLRaw.lib.e_sqlite3.linux/runtimes/linux-x64/native/libe_sqlite3.so ProviderPackages/ " />
+    <Exec Command="cp ../../packages/SQLitePCLRaw.provider.e_sqlite3.netstandard11/lib/netstandard1.1/SQLitePCLRaw.provider.e_sqlite3.dll ProviderPackages/ " />
+    <Exec Command="cp ../../packages/SQLitePCLRaw.bundle_green/lib/netcoreapp/SQLitePCLRaw.batteries_v2.dll ProviderPackages/ " />
+    <Exec Command="cp ../../packages/SQLitePCLRaw.core/lib/netstandard1.1/SQLitePCLRaw.core.dll ProviderPackages/ " />
+  </Target>
+  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+    <CallTarget Targets="CopyLibraries" />
+  </Target>
+  <Import Project="..\..\.paket\Paket.Restore.targets" />
+</Project>

@@ -1,0 +1,8 @@
+FluentMigrator
+FluentMigrator.Runner
+FluentMigrator.Runner.Sqlite
+Microsoft.Data.SQLite
+
+SQLitePCLRaw.bundle_green
+SQLitePCLRaw.core
+SQLProvider

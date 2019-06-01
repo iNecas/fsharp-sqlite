@@ -1,0 +1,10 @@
+source https://www.nuget.org/api/v2
+
+nuget FluentMigrator
+nuget FluentMigrator.Runner
+nuget FluentMigrator.Runner.Sqlite
+nuget Microsoft.Data.SQLite
+
+nuget SQLitePCLRaw.bundle_green
+nuget SQLitePCLRaw.core
+nuget SQLProvider
