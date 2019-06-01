@@ -1,11 +1,17 @@
 module FsharpSqlite.Use.Program
 
-open Microsoft.Extensions.DependencyInjection
-open FsharpSqlite.Use.SqlProvider
 
-open System
-open System.Security.Cryptography
-open System.Text
+type Convert = System.Convert
+
+module internal Text =
+    type Encoding = System.Text.Encoding
+    
+module internal Crypto =
+    open System.Security
+    type RNGCryptoServiceProvider = Cryptography.RNGCryptoServiceProvider
+    type SHA256 = Cryptography.SHA256
+    
+type Sql = FsharpSqlite.Use.SqlProvider.Sql
 
 let findOrCreateUser
     (dc : Sql.dataContext)
@@ -23,16 +29,16 @@ let findOrCreateUser
         user.FirstName <- firstName
         user.LastName <- lastName
         user.Email <- email
-        let rngProvider = new RNGCryptoServiceProvider()
+        let rngProvider = new Crypto.RNGCryptoServiceProvider()
 
         let saltBytes = Array.create 10 (new byte())
         rngProvider.GetBytes(saltBytes)
         user.PasswordSalt <- Convert.ToBase64String(saltBytes)
-        let passwordSaltBytes = Array.append <| Encoding.UTF8.GetBytes(password) <| saltBytes
-        user.PasswordHash <- Convert.ToBase64String(SHA256.Create().ComputeHash(passwordSaltBytes))
+        let passwordSaltBytes = Array.append <| Text.Encoding.UTF8.GetBytes(password) <| saltBytes
+        user.PasswordHash <- Convert.ToBase64String(Crypto.SHA256.Create().ComputeHash(passwordSaltBytes))
         dc.SubmitUpdates()
         user
-    | Some john -> john
+    | Some user -> user
 
 
 let WorkWithDb =
