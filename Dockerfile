@@ -12,6 +12,6 @@ ADD . /app
 WORKDIR /app
 
 RUN dotnet restore
-RUN dotnet build src/FSharpSqlite.Migrate && dotnet run -p src/FSharpSqlite.Migrate
+RUN dotnet run -p src/FSharpSqlite.Migrate
 
 ENTRYPOINT ["/bin/bash"]
