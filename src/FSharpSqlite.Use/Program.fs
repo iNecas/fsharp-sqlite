@@ -1,5 +1,6 @@
 module FsharpSqlite.Use.Program
 
+// ALIASES [[[
 
 type Convert = System.Convert
 
@@ -13,40 +14,70 @@ module internal Crypto =
     
 type Sql = FsharpSqlite.Use.SqlProvider.Sql
 
+// ]]] ALIASES
+
+type PasswordHash = {
+    Hash: string
+    Salt: string
+}
+    
+type Password =
+    | PlainTextPassword of string
+    | PasswordHash of PasswordHash
+
+type PasswordHash with
+    static member OfPlainTextPassword (password: string) =
+        let rngProvider = new Crypto.RNGCryptoServiceProvider()
+
+        let saltBytes = Array.create 10 (new byte())
+        rngProvider.GetBytes(saltBytes)
+        let salt = Convert.ToBase64String(saltBytes)
+        let passwordSaltBytes = Array.append <| Text.Encoding.UTF8.GetBytes(password) <| saltBytes
+        let hash = Convert.ToBase64String(Crypto.SHA256.Create().ComputeHash(passwordSaltBytes))
+        { Hash = hash; Salt = salt }
+
+
+type User = {
+    FirstName: string
+    LastName: string
+    Email: string
+    Password: Password
+}
+
 type Persistence() =
     let dc = Sql.GetDataContext()
         
-    member __.findOrCreateUser
-        (firstName: string) (lastName: string) (email: string) (password: string) : Sql.dataContext.``main.UsersEntity`` =
+    member __.findOrCreateUser (user: User) : Sql.dataContext.``main.UsersEntity`` =
         let userQuery = query {
-            for user in dc.Main.Users do
-                where (user.Email = email)
+            for u in dc.Main.Users do
+                where (u.Email = user.Email)
                 take 1
-                select (user)
+                select (u)
         }
         let maybeUser = userQuery |> Seq.tryHead
         match maybeUser with
         | None ->
-            let user =  dc.Main.Users.Create()
-            user.FirstName <- firstName
-            user.LastName <- lastName
-            user.Email <- email
-            let rngProvider = new Crypto.RNGCryptoServiceProvider()
-
-            let saltBytes = Array.create 10 (new byte())
-            rngProvider.GetBytes(saltBytes)
-            user.PasswordSalt <- Convert.ToBase64String(saltBytes)
-            let passwordSaltBytes = Array.append <| Text.Encoding.UTF8.GetBytes(password) <| saltBytes
-            user.PasswordHash <- Convert.ToBase64String(Crypto.SHA256.Create().ComputeHash(passwordSaltBytes))
+            let u =  dc.Main.Users.Create()
+            u.FirstName <- user.FirstName
+            u.LastName <- user.LastName
+            u.Email <- user.Email
+            let passwordHash =
+                match user.Password with
+                | PlainTextPassword password ->  PasswordHash.OfPlainTextPassword password
+                | PasswordHash passwordHash -> passwordHash
+            u.PasswordHash <- passwordHash.Hash
+            u.PasswordSalt <- passwordHash.Salt
+                
             dc.SubmitUpdates()
-            user
-        | Some user -> user
+            u
+        | Some u -> u
 
 
 let WorkWithDb =
     let p = new Persistence()
-    let john = p.findOrCreateUser "John" "Lenon" "john@beatles.com" "HeyJude123"
-    printfn "John's id is %d" john.Id
+    let john = { FirstName = "John"; LastName = "Lenon"; Email = "john@beatles.com"; Password = PlainTextPassword("HeyJude123") }
+    let johnRecord = p.findOrCreateUser john
+    printfn "John's id is %d" johnRecord.Id
     ()
 
 [<EntryPoint>]
