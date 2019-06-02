@@ -4,7 +4,8 @@ An example project using F# and SQLite, that involves:
 
 - defining and running DB in F# using [fluentmigrator](https://github.com/fluentmigrator/fluentmigrator)
 - setup of [SqlProvider](https://fsprojects.github.io/SQLProvider/) with SQLite (involving copying the files to
-right place and custom build for additional hotfix)
+right place and custom build for additional hotfix for [a bug](https://github.com/fsprojects/SQLProvider/pull/618).
+)
 - using SqlProvider to work with the data
 - running on top of dotnet core v3.0 using Linux containers
 
@@ -28,7 +29,8 @@ and will prepare the setup for running the application.
 
 ## Reproducing SQLite issue
 
-This repository is also used as a reproducer for an issue `SqlProvider` has with `SQLite`.
+This repository is also used as a reproducer for an issue `SqlProvider` has with `SQLite`
+[described here](https://github.com/fsprojects/SQLProvider/pull/618).
 
 In order reproduce the issue just run:
 
