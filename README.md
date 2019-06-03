@@ -1,4 +1,4 @@
-# FsharpSqlite
+# FSharpSqlite
 
 An example project using F# and SQLite, that involves:
 

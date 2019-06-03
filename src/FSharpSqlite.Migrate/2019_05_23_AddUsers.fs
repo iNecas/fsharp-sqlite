@@ -1,4 +1,4 @@
-module FsharpSqlite.AddUsers
+module FSharpSqlite.AddUsers
 
 open FluentMigrator
 
