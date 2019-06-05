@@ -11,7 +11,8 @@ RUN echo 'en_US.UTF-8 UTF-8' > /etc/locale.gen && /usr/sbin/locale-gen
 ADD . /app
 WORKDIR /app
 
-RUN dotnet restore
+# Fore some reason, the first restore exits with non-zero code
+RUN dotnet restore; dotnet restore
 RUN dotnet run -p src/FSharpSqlite.Migrate
 
 ENTRYPOINT ["/bin/bash"]
